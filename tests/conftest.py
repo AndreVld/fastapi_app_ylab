@@ -15,7 +15,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.main import app
 from src import get_session
-from src.models.models import Base, Menu
+from src.models.models import Base, Menu, Submenu, Dish
 from src.config import DB_HOST_TEST, DB_NAME_TEST, DB_PASS_TEST, DB_PORT_TEST, DB_USER_TEST
 
 
@@ -39,15 +39,41 @@ app.dependency_overrides[get_session] = override_get_session
 async def prepare_database():
     async with async_engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    async with async_session_maker() as session:
+        menu = Menu(title='menu ', description='menu  description')
+        session.add(menu)
+        await session.commit()
+
+        submenu = Submenu(title='submenu', 
+                           description='submenu  description',
+                           menu_id=menu.id)
+        session.add(submenu)
+        await session.commit()  
+
+        dish = Dish(title='dish', 
+                    description='dish  description',
+                    price='142.41',
+                    submenu_id=submenu.id)
+        session.add(dish)
+        await session.commit()
+
     yield
     async with async_engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="function")
 async def menu_id():
     async with async_session_maker() as session:
         result = await session.scalar(select(Menu))
+        result = jsonable_encoder(result)
+        return result['id']
+    
+
+@pytest.fixture(scope="function")
+async def submenu_id():
+    async with async_session_maker() as session:
+        result = await session.scalar(select(Submenu))
         result = jsonable_encoder(result)
         return result['id']
 
