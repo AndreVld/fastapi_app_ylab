@@ -9,13 +9,6 @@ DATABASE_URI = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{D
 async_engine = create_async_engine(DATABASE_URI)
 
 
-async def init_models():
-    from models.models import Base
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-
-
 # Dependency
 async def get_session() -> AsyncSession:
     async_session = sessionmaker(
@@ -23,8 +16,3 @@ async def get_session() -> AsyncSession:
     )
     async with async_session() as session:
         yield session
-
-
-if __name__ == '__main__':
-    import asyncio
-    asyncio.run(init_models())

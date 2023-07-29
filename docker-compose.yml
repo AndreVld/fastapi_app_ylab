@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15.1-alpine
+    container_name: db_restaur
+    command: -p 2112
+    expose:
+      - 2112
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "$$POSTGRES_USER", "-d", "$$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 80s
+  
+  app:
+    build: 
+      context: .
+    env_file:
+      - .env
+    container_name: fastapi_app
+    command: ["/fastapi_app/app.sh"]
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
