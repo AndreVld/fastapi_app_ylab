@@ -1,16 +1,15 @@
-from fastapi.encoders import jsonable_encoder
 import asyncio
 import pytest
 from typing import AsyncGenerator
 from httpx import AsyncClient 
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import insert, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 import sys
 import os
 
 
-sys.path.insert(0 ,os.path.join(os.getcwd(), 'src'))
+sys.path.append(os.path.join(os.getcwd(), 'src'))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.main import app
@@ -40,23 +39,15 @@ async def prepare_database():
     async with async_engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     async with async_session_maker() as session:
-        menu = Menu(title='menu ', description='menu  description')
+        menu = Menu(title='menu', description='menu description')
         session.add(menu)
         await session.commit()
 
         submenu = Submenu(title='submenu', 
-                           description='submenu  description',
+                           description='submenu description',
                            menu_id=menu.id)
         session.add(submenu)
         await session.commit()  
-
-        dish = Dish(title='dish', 
-                    description='dish  description',
-                    price='142.41',
-                    submenu_id=submenu.id)
-        session.add(dish)
-        await session.commit()
-
     yield
     async with async_engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -65,17 +56,19 @@ async def prepare_database():
 @pytest.fixture(scope="function")
 async def menu_id():
     async with async_session_maker() as session:
-        result = await session.scalar(select(Menu))
-        result = jsonable_encoder(result)
-        return result['id']
+        return await session.scalar(select(Menu.id))
     
 
 @pytest.fixture(scope="function")
 async def submenu_id():
     async with async_session_maker() as session:
-        result = await session.scalar(select(Submenu))
-        result = jsonable_encoder(result)
-        return result['id']
+        return await session.scalar(select(Submenu.id))
+
+
+@pytest.fixture(scope="function")
+async def dish_id():
+    async with async_session_maker() as session:
+        return await session.scalar(select(Dish.id))
 
 
 @pytest.fixture(scope="session")
@@ -87,6 +80,6 @@ def event_loop(request):
 
 @pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url='http://127.0.0.1:8000', follow_redirects=True) as ac:
+    async with AsyncClient(app=app, base_url='http://tests', follow_redirects=True) as ac:
         yield ac
         

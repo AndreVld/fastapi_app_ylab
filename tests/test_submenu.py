@@ -68,6 +68,7 @@ async def test_update_submenu(ac: AsyncClient, menu_id: str, submenu_id: str):
     assert updated_submenu['title'] == new_data_for_submenu['title']
     assert updated_submenu['description'] == new_data_for_submenu['description']
 
+
 async def test_delete_submenu(ac: AsyncClient, menu_id: str, submenu_id: str):
 
     response = await ac.delete(f'/api/v1/menus/{menu_id}/submenus/{submenu_id}')
