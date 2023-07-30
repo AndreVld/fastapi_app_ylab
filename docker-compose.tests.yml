@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  tests_db:
+    image: postgres:15.1-alpine
+    container_name: tests_db
+    command: -p 3212
+    expose:
+      - 3212
+    env_file:
+      - .env-tests
+    networks:
+      - common_network_test
+
+  test:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env-tests
+    container_name: tests
+    command: pytest
+    depends_on:
+      - tests_db
+    networks:
+      - common_network_test
+
+networks:
+  common_network_test:
