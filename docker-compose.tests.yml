@@ -11,6 +11,15 @@ services:
     networks:
       - common_network_test
 
+  redis-cache_tests:
+    image: redis:7
+    container_name: redis-cache_tests
+    command: --port 3145
+    expose:
+      - 3145
+    networks:
+      - common_network_test
+
   test:
     build:
       context: .
@@ -21,6 +30,7 @@ services:
     command: pytest
     depends_on:
       - tests_db
+      - redis-cache_tests
     networks:
       - common_network_test
 

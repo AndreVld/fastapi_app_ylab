@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Depends, HTTPException
 from pydantic import UUID4
@@ -21,7 +21,8 @@ class MenuRepository:
         if not await self.session.scalar(select(exists().where(self.model.id == menu_id))):
             raise HTTPException(status_code=404, detail='menu not found')
 
-    async def get_list_menu(self) -> list[Menu]:
+    async def get_list_menu(self) -> list[dict[str, Any]]:
+
         query = await self.session.execute(
             select(
                 Menu.id,
@@ -31,10 +32,20 @@ class MenuRepository:
                 func.count(distinct(Dish.id)).label('dishes_count'))
             .outerjoin(Submenu, Menu.id == Submenu.menu_id)
             .outerjoin(Dish, Submenu.id == Dish.submenu_id)
-            .group_by(Menu.id)
+            .group_by(Menu)
         )
+        data = [
+            {
+                'id': row[0],
+                'title': row[1],
+                'description': row[2],
+                'submenus_count': row[3],
+                'dishes_count': row[4]
+            }
+            for row in query.all()
+        ]
 
-        return query.all()
+        return data
 
     async def get_by_id(self, menu_id: UUID4) -> Menu:
 
