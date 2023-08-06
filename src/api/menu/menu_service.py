@@ -5,14 +5,14 @@ from pydantic import UUID4
 
 from src.database.schemas import MenuUpdateCreate
 
-from .cache_menu import MenuCacheRepositiry
+from .cache_menu import MenuCacheRepository
 from .repositories import Menu, MenuRepository
 
 
 class MenuService:
 
     def __init__(self, database_repo: Annotated[MenuRepository, Depends()],
-                 cache_repo: Annotated[MenuCacheRepositiry, Depends()]) -> None:
+                 cache_repo: Annotated[MenuCacheRepository, Depends()]) -> None:
         self.database_repo = database_repo
         self.cache_repo = cache_repo
 

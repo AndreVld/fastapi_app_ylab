@@ -24,14 +24,15 @@ class DishRepository:
     async def get_list_dish(self, submenu_id: UUID4) -> list[Dish]:
         query = await self.session.scalars(
             select(self.model)
-            .where(self.model.submenu_id == submenu_id)
+            .filter(self.model.submenu_id == submenu_id)
+            .group_by(self.model.id)
         )
-        return query
+        return query.all()
 
     async def get_by_id(self, dish_id: UUID4) -> Dish:
         await self._check_exist(dish_id, self.model)
         query = await self.session.scalar(
-            select(self.model,)
+            select(self.model)
             .where(self.model.id == dish_id)
         )
         return query
