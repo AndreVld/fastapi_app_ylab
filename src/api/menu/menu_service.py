@@ -1,12 +1,12 @@
-from fastapi import Depends
-from typing import Annotated, Any, Optional, Union
+from typing import Annotated
 
+from fastapi import Depends
 from pydantic import UUID4
 
 from src.database.schemas import MenuUpdateCreate
-from .repositories import MenuRepository, Menu
-from .cache_menu import MenuCacheRepositiry
 
+from .cache_menu import MenuCacheRepositiry
+from .repositories import Menu, MenuRepository
 
 
 class MenuService:
@@ -20,7 +20,7 @@ class MenuService:
         cache = await self.cache_repo.get_menu_list_cache()
         if cache or cache == []:
             return cache
-        menu_list  = await self.database_repo.get_list_menu()
+        menu_list = await self.database_repo.get_list_menu()
         await self.cache_repo.set_menu_list_cache(menu_list)
         return menu_list
 
@@ -30,21 +30,21 @@ class MenuService:
         menu = await self.database_repo.get_by_id(id)
         await self.cache_repo.set_menu_cache(id, menu)
         return menu
-    
+
     async def delete(self, id: UUID4) -> None:
         await self.database_repo.delete(id)
         await self.cache_repo.delete_menu_cache(id)
         await self.cache_repo.delete_menu_list_cache()
-    
+
     async def create(self, data: MenuUpdateCreate) -> Menu:
         menu = await self.database_repo.create(data)
         await self.cache_repo.delete_menu_list_cache()
         await self.cache_repo.set_menu_cache(menu.id, menu)
         return menu
-    
+
     async def update(self, id: UUID4, data: MenuUpdateCreate) -> Menu:
         await self.cache_repo.delete_menu_cache(id)
         await self.cache_repo.delete_menu_list_cache()
-        menu =  await self.database_repo.update(id, data)
+        menu = await self.database_repo.update(id, data)
         await self.cache_repo.set_menu_cache(id, menu)
         return menu

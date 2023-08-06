@@ -1,11 +1,14 @@
-from fastapi import Depends
-from typing import Annotated, Any
-from pydantic import UUID4
-from aioredis import Redis
-from src.database.base import get_redis_pool
-from .repositories import MenuRepository, Menu
-from src.config import EXPIRATION
 import pickle
+from typing import Annotated, Any
+
+from aioredis import Redis
+from fastapi import Depends
+from pydantic import UUID4
+
+from src.config import EXPIRATION
+from src.database.base import get_redis_pool
+
+from .repositories import Menu
 
 
 class MenuCacheRepositiry:
@@ -20,19 +23,19 @@ class MenuCacheRepositiry:
             return pickle.loads(cache)
         return None
 
-    async def set_menu_list_cache(self, menu: list[dict[str, Any]])-> None:
+    async def set_menu_list_cache(self, menu: list[dict[str, Any]]) -> None:
         await self.redis.set(self.key_menu_list,
                              pickle.dumps(menu),
                              ex=self.ex)
         return None
-    
+
     async def get_menu_cache(self, menu_id: UUID4) -> Menu | None:
         if cache := await self.redis.get(f'{self.key_prefix}{str(menu_id)}'):
             return pickle.loads(cache)
         return None
-    
-    async def set_menu_cache(self, menu_id: UUID4, menu : Menu) -> None:
-        await self.redis.set(f'{self.key_prefix}{str(menu_id)}', 
+
+    async def set_menu_cache(self, menu_id: UUID4, menu: Menu) -> None:
+        await self.redis.set(f'{self.key_prefix}{str(menu_id)}',
                              pickle.dumps(menu),
                              ex=self.ex)
 
