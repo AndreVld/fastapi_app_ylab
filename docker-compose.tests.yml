@@ -12,7 +12,7 @@ services:
       - common_network_test
 
   test:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     env_file:
