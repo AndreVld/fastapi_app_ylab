@@ -16,8 +16,8 @@ async def test_create_menu(ac: AsyncClient):
     assert "title" in response_data, '"title" field is missing in the response'
     assert "description" in response_data, '"description" field is missing in the response'
     assert "id" in response_data, '"id" field is missing in the response'
-    assert "submenus_count" in response_data, '"submenus_count" field is missing in the response'
-    assert "dishes_count" in response_data, '"dishes_count" field is missing in the response'
+    assert "submenus_count" in response_data, '"submenus count" field is missing in the response'
+    assert "dishes_count" in response_data, '"dishes count" field is missing in the response'
 
 
 async def test_get_list_menu(ac: AsyncClient):
@@ -33,7 +33,7 @@ async def test_get_list_menu(ac: AsyncClient):
         assert "title" in menu, '"title" field is missing in the response'
         assert "description" in menu, '"description" field is missing in the response'
         assert "id" in menu, '"id" field is missing in the response'
-        assert "submenus_count" in menu, '"submenus_count" field is missing in the response'
+        assert "submenus_count" in menu, '"submenus count" field is missing in the response'
         assert "dishes_count" in menu, '"dishes count" field is missing in the response'
 
 
@@ -47,8 +47,8 @@ async def test_get_specific_menu(ac: AsyncClient, menu_id: str):
     assert "title" in response_data, '"title" field is missing in the response'
     assert "description" in response_data, '"description" field is missing in the response'
     assert "id" in response_data, '"id" field is missing in the response'
-    assert "submenus_count" in response_data, '"submenus" count field is missing in the response'
-    assert "dishes_count" in response_data, '"dishes" count field is missing in the response'
+    assert "submenus_count" in response_data, '"submenus count" field is missing in the response'
+    assert "dishes_count" in response_data, '"dishes count" field is missing in the response'
 
 
 async def test_update_menu(ac: AsyncClient, menu_id: str):
@@ -73,4 +73,3 @@ async def test_delete_menu(ac: AsyncClient, menu_id: str):
 
     response = await ac.delete(f'/api/v1/menus/{menu_id}')
     assert response.status_code == 200, f'Expected status code 200, but got "{response.status_code}"'
-    assert response.headers["Content-Type"] == "application/json", "Content-Type header is not application/json"

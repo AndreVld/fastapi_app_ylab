@@ -3,8 +3,7 @@ services:
   db:
     image: postgres:15.1-alpine
     container_name: db_restaur
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
+
     command: -p 2112
     expose:
       - 2112
@@ -12,6 +11,16 @@ services:
       - .env
     networks:
       - common_network
+
+  
+  redis-cache:
+    image: redis:7
+    container_name: redis-cache
+    ports:
+      - '6379:6379'
+    networks:
+      - common_network
+
 
   app:
     build: 
@@ -26,9 +35,9 @@ services:
       - common_network
     depends_on:
       - db
+      - redis-cache
 
 
-volumes:
-  postgres_data:
+
 networks:
   common_network:

@@ -2,43 +2,19 @@ import asyncio
 import pytest
 from typing import AsyncGenerator
 from httpx import AsyncClient 
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-import sys
-import os
-
-
-sys.path.append(os.path.join(os.getcwd(), 'src'))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+from src.database.models import Base, Menu, Submenu, Dish
+from src.database.base import async_session, async_engine
 from src.main import app
-from src import get_session
-from src.models.models import Base, Menu, Submenu, Dish
-from src.config import DB_HOST_TEST, DB_NAME_TEST, DB_PASS_TEST, DB_PORT_TEST, DB_USER_TEST
 
 
-DATABASE_URL_TEST = f"postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}:{DB_PORT_TEST}/{DB_NAME_TEST}"
-
-
-async_engine_test = create_async_engine(DATABASE_URL_TEST, echo=False)
-async_session_maker = sessionmaker(async_engine_test, class_=AsyncSession, expire_on_commit=False)
-Base.metadata.bind = async_engine_test
-
-
-async def override_get_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
-        yield session
-
-
-app.dependency_overrides[get_session] = override_get_session
-
+Base.metadata.bind = async_engine
 
 @pytest.fixture(scope="session", autouse=True)
 async def prepare_database():
-    async with async_engine_test.begin() as conn:
+    async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    async with async_session_maker() as session:
+    async with async_session() as session:
         menu = Menu(title='menu', description='menu description')
         session.add(menu)
         await session.commit()
@@ -49,25 +25,25 @@ async def prepare_database():
         session.add(submenu)
         await session.commit()  
     yield
-    async with async_engine_test.begin() as conn:
+    async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         
 
 @pytest.fixture(scope="function")
 async def menu_id():
-    async with async_session_maker() as session:
+    async with async_session() as session:
         return await session.scalar(select(Menu.id))
     
 
 @pytest.fixture(scope="function")
 async def submenu_id():
-    async with async_session_maker() as session:
+    async with async_session() as session:
         return await session.scalar(select(Submenu.id))
 
 
 @pytest.fixture(scope="function")
 async def dish_id():
-    async with async_session_maker() as session:
+    async with async_session() as session:
         return await session.scalar(select(Dish.id))
 
 
@@ -82,4 +58,3 @@ def event_loop(request):
 async def ac() -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(app=app, base_url='http://tests', follow_redirects=True) as ac:
         yield ac
-        

@@ -17,7 +17,7 @@ async def test_create_submenu(ac: AsyncClient, menu_id: str):
     assert "description" in response_data, '"description" field is missing in the response'
     assert "id" in response_data, '"id" field is missing in the response'
     assert "menu_id" in response_data, '"menu_id" field is missing in the response'
-    assert "dishes_count" in response_data, '"dishes_count" field is missing in the response'
+    assert "dishes_count" in response_data, '"dishes count" field is missing in the response'
 
 
 async def test_get_list_submenu(ac: AsyncClient, menu_id: str):
@@ -35,7 +35,7 @@ async def test_get_list_submenu(ac: AsyncClient, menu_id: str):
         assert "description" in submenu, '"description" field is missing in the response'
         assert "id" in submenu, '"id" field is missing in the response'
         assert "menu_id" in submenu, '"menu_id" field is missing in the response'
-        assert "dishes_count" in submenu, '"dishes" count field is missing in the response'
+        assert "dishes_count" in submenu, '"dishes count" field is missing in the response'
 
 
 async def test_get_specific_submenu(ac: AsyncClient, menu_id: str, submenu_id: str):
@@ -49,7 +49,7 @@ async def test_get_specific_submenu(ac: AsyncClient, menu_id: str, submenu_id: s
     assert "description" in response_data, '"description" field is missing in the response'
     assert "id" in response_data, '"id" field is missing in the response'
     assert "menu_id" in response_data, '"menu_id" field is missing in the response'
-    assert "dishes_count" in response_data, '"dishes" count field is missing in the response'
+    assert "dishes_count" in response_data, '"dish count" field is missing in the response'
 
 
 async def test_update_submenu(ac: AsyncClient, menu_id: str, submenu_id: str):

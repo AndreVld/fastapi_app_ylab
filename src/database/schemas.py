@@ -11,7 +11,6 @@ class MenuSchema(MenuUpdateCreate):
     submenus_count : int = 0
     dishes_count : int = 0
 
-
 class SubmenuUpdateCreate(BaseModel):
     title: str
     description: str = None
@@ -21,11 +20,10 @@ class SubmenuSchema(SubmenuUpdateCreate):
     menu_id: UUID4
     dishes_count : int = 0
 
-
 class DishUpdateCreate(BaseModel):
     title: str
     description: str = None
-    price: Decimal 
+    price: Decimal
     
 class DishSchema(DishUpdateCreate):
     id: UUID4
