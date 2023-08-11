@@ -35,12 +35,14 @@ class DishService:
         await self.database_repo.delete(id)
         await self.cache_repo.delete_dish_cache(id)
         await self.cache_repo.delete_dish_list_cache()
+        await self.cache_repo.delete_all_menu_cache()
 
     async def create(self, submenu_id: UUID4, data: DishUpdateCreate) -> Dish:
         dish = await self.database_repo.create(submenu_id, data)
         await self.cache_repo.delete_cache(submenu_id)
         await self.cache_repo.set_dish_cache(dish.id, dish)
         await self.cache_repo.delete_dish_list_cache()
+        await self.cache_repo.delete_all_menu_cache()
         return dish
 
     async def update(self, id: UUID4, data: DishUpdateCreate) -> Dish:
@@ -48,4 +50,5 @@ class DishService:
         await self.cache_repo.delete_dish_list_cache()
         await self.cache_repo.delete_dish_cache(id)
         await self.cache_repo.set_dish_cache(dish.id, dish)
+        await self.cache_repo.delete_all_menu_cache()
         return dish

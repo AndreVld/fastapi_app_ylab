@@ -5,10 +5,11 @@ from pydantic import UUID4
 from sqlalchemy import delete, distinct, exists, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.database.base import get_session
 from src.database.models import Dish, Menu, Submenu
-from src.database.schemas import MenuUpdateCreate
+from src.database.schemas import AllMenu, MenuUpdateCreate
 
 
 class MenuRepository:
@@ -20,6 +21,14 @@ class MenuRepository:
     async def _check_exist(self, menu_id: UUID4) -> None:
         if not await self.session.scalar(select(exists().where(self.model.id == menu_id))):
             raise HTTPException(status_code=404, detail='menu not found')
+
+    async def get_all_menu(self) -> list[AllMenu | None]:
+        query = await self.session.scalars(
+            select(Menu)
+            .options(selectinload(Menu.submenus)
+                     .selectinload(Submenu.dishes))
+        )
+        return query.all()
 
     async def get_list_menu(self) -> list[dict[str, Any]]:
 

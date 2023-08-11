@@ -21,6 +21,7 @@ class DishCacheRepository:
         self.key_menu_list = Keys.key_menu_list.value
         self.key_dish_list_prefix = Keys.key_dish_list_prefix.value
         self.key_dish_prefix = Keys.key_dish_prefix.value
+        self.key_all_menu = Keys.key_all_menu.value
 
     async def get_dish_list_cache(self, submenu_id: UUID4) -> list[Dish | None] | None:
         if cache := await self.redis.get(f'{self.key_dish_list_prefix}{str(submenu_id)}'):
@@ -62,3 +63,6 @@ class DishCacheRepository:
         await self.redis.delete(f'{self.key_prefix_submenu}{str(submenu_id)}')
         keys.append(self.key_menu_list)
         await self.redis.delete(*keys)
+
+    async def delete_all_menu_cache(self):
+        await self.redis.delete(self.key_all_menu)

@@ -26,6 +26,12 @@ async def prepare_database():
                           menu_id=menu.id)
         session.add(submenu)
         await session.commit()
+        dish = Dish(title='Dish',
+                    description='dish description',
+                    price='123.12',
+                    submenu_id=submenu.id)
+        session.add(dish)
+        await session.commit()
     yield
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

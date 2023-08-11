@@ -73,3 +73,37 @@ async def test_delete_menu(ac: AsyncClient, menu_id: str):
 
     response = await ac.delete(f'/api/v1/menus/{menu_id}')
     assert response.status_code == 200, f'Expected status code 200, but got "{response.status_code}"'
+
+
+async def test_all_menu(ac: AsyncClient):
+    response = await ac.get('/api/v1/allmenus')
+    assert response.status_code == 200, f'Expected status code 200, but got "{response.status_code}'
+    assert response.headers['Content-Type'] == 'application/json', 'Content-Type header is not application/json'
+
+    response_data = response.json()
+    assert isinstance(response_data, list), f'Expected response data to be list, but got {type(response_data)}'
+    if response_data:
+        menu = response_data.pop()
+        assert 'title' in menu, '"title" field is missing in the menu'
+        assert 'description' in menu, '"description" field is missing in the menu'
+        assert 'id' in menu, '"id" field is missing in the menu'
+        assert 'submenus' in menu, '"submenus" field is missing in the menu'
+
+        assert isinstance(menu['submenus'], list), f'Expected submenus data to be list, but got {type(response_data)}'
+        if menu['submenus']:
+            submenu = menu['submenus'].pop()
+            assert 'title' in submenu, '"title" field is missing in the submenu'
+            assert 'description' in submenu, '"description" field is missing in the submenu'
+            assert 'id' in submenu, '"id" field is missing in the submenu'
+            assert 'menu_id' in submenu, '"menu_id" field is missing in the submenu'
+            assert 'dishes' in submenu, '"dishes" field is missing in the submenu'
+
+            assert isinstance(submenu['dishes'],
+                              list), f'Expected dishes data to be list, but got {type(response_data)}'
+            if submenu['dishes']:
+                dish = submenu['dishes'].pop()
+                assert 'title' in dish, '"title" field is missing in the dish'
+                assert 'description' in dish, '"description" field is missing in the dish'
+                assert 'id' in dish, '"id" field is missing in the dish'
+                assert 'price' in dish, '"price" field is missing in the dish'
+                assert 'submenu_id' in dish, '"submenu_id" field is missing in the dish'

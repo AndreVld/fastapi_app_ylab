@@ -21,6 +21,18 @@ class MenuCacheRepository:
         self.key_menu_list = Keys.key_menu_list.value
         self.key_dish_list_prefix = Keys.key_dish_list_prefix.value
         self.key_dish_prefix = Keys.key_dish_prefix.value
+        self.key_all_menu = Keys.key_all_menu.value
+
+    async def get_all_menu_cache(self):
+        if cache := await self.redis.get(self.key_all_menu):
+            return pickle.loads(cache)
+        return None
+
+    async def set_all_menu_cache(self, data) -> None:
+        await self.redis.set(self.key_all_menu,
+                             pickle.dumps(data),
+                             ex=self.ex)
+        return None
 
     async def get_menu_list_cache(self) -> list[Menu | None] | None:
         if cache := await self.redis.get(self.key_menu_list):
@@ -59,3 +71,6 @@ class MenuCacheRepository:
         keys_dish.extend(keys_dish_list)
         if keys_dish:
             await self.redis.delete(*keys_dish)
+
+    async def delete_all_menu_cache(self):
+        await self.redis.delete(self.key_all_menu)

@@ -26,6 +26,7 @@ class Keys(Enum):
     key_submenu_list_prefix = 'submenu_for_menu:'
     key_prefix_submenu = 'submenu:'
     key_prefix_menu = 'menu:'
-    key_menu_list = 'all_menu'
+    key_menu_list = 'list_menu'
     key_dish_list_prefix = 'dishes_for_submenu:'
     key_dish_prefix = 'dish:'
+    key_all_menu = 'all_menu'

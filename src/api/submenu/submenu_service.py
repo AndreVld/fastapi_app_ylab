@@ -35,12 +35,14 @@ class SubmenuService:
         await self.database_repo.delete(id)
         await self.cache_repo.delete_submenu_cache(id)
         await self.cache_repo.delete_menu_list_cache()
+        await self.cache_repo.delete_all_menu_cache()
         await self.cache_repo.delete_submenu_list_cache()
 
     async def create(self, menu_id: UUID4, data: SubmenuUpdateCreate) -> Submenu:
         submenu = await self.database_repo.create(menu_id, data)
         await self.cache_repo.delete_submenu_list_cache()
         await self.cache_repo.delete_menu_list_cache()
+        await self.cache_repo.delete_all_menu_cache()
         await self.cache_repo.delete_menu_cache(menu_id)
         await self.cache_repo.set_submenu_cache(submenu.id, submenu)
         return submenu
@@ -49,5 +51,6 @@ class SubmenuService:
         submenu = await self.database_repo.update(id, data)
         await self.cache_repo.delete_submenu_list_cache()
         await self.cache_repo.delete_submenu_cache(id)
+        await self.cache_repo.delete_all_menu_cache()
         await self.cache_repo.set_submenu_cache(submenu.id, submenu)
         return submenu

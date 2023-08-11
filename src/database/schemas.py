@@ -34,3 +34,14 @@ class DishUpdateCreate(BaseModel):
 class DishSchema(DishUpdateCreate):
     id: UUID4
     submenu_id: UUID4
+
+
+class SubmenuDish(SubmenuUpdateCreate):
+    id: UUID4
+    menu_id: UUID4
+    dishes: list[DishSchema | None]
+
+
+class AllMenu(MenuUpdateCreate):
+    id: UUID4
+    submenus: list[SubmenuDish | None]

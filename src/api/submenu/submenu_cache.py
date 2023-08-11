@@ -21,6 +21,7 @@ class SubmenuCacheRepository:
         self.key_menu_list = Keys.key_menu_list.value
         self.key_dish_list_prefix = Keys.key_dish_list_prefix.value
         self.key_dish_prefix = Keys.key_dish_prefix.value
+        self.key_all_menu = Keys.key_all_menu.value
 
     async def get_submenu_list_cache(self, menu_id: UUID4) -> list[Submenu | None] | None:
         if cache := await self.redis.get(f'{self.key_submenu_list_prefix}{str(menu_id)}'):
@@ -63,3 +64,6 @@ class SubmenuCacheRepository:
         if keys := await self.redis.keys(f'{self.key_dish_prefix}*'):
             await self.redis.delete(*keys)
         await self.redis.delete(f'{self.key_dish_list_prefix}{str(submenu_id)}')
+
+    async def delete_all_menu_cache(self):
+        await self.redis.delete(self.key_all_menu)
