@@ -19,7 +19,7 @@ DB_PASS_TEST = os.environ.get('DB_PASS_TEST')
 
 REDIS_HOST = os.environ.get('REDIS_HOST')
 REDIS_PORT = os.environ.get('REDIS_PORT')
-EXPIRATION = 355
+EXPIRATION = 10
 
 
 class Keys(Enum):
@@ -30,3 +30,6 @@ class Keys(Enum):
     key_dish_list_prefix = 'dishes_for_submenu:'
     key_dish_prefix = 'dish:'
     key_all_menu = 'all_menu'
+
+
+SCHEDULE = 15

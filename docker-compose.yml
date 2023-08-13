@@ -21,6 +21,26 @@ services:
     networks:
       - common_network
 
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+    networks:
+      - common_network
+
+  celery:
+    build:
+      context: .
+    container_name: celery_app
+    env_file:
+      - .env
+    command: sh -c "cd src && sleep 20 && celery --app=tasks.tasks.celery_app worker -B"
+    networks:
+      - common_network
+    depends_on:
+      - rabbitmq
+
 
   app:
     build:
@@ -36,7 +56,8 @@ services:
     depends_on:
       - db
       - redis-cache
-
+      - rabbitmq
+      - celery
 
 
 networks:
